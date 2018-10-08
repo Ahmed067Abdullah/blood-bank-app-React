@@ -1,0 +1,11 @@
+.Main {
+    margin : 70px auto;
+    width : 90%;
+    padding : 15px;
+}
+
+@media(min-width : 500px){
+    .Main{
+        width: 450px;
+    }
+}
