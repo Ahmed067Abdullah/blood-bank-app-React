@@ -5,3 +5,5 @@ export const LOGIN_END = 'LOGIN_END';
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
 export const REGISTERED_DONOR = 'REGISTERED_DONOR';
+
+export const SET_DONORS = 'SET_DONORS';

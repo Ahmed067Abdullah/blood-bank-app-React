@@ -5,6 +5,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import * as firebase from 'firebase';
+import * as actions from '../../store/actions/index';
+import {connect} from 'react-redux';
 
 import Donor from '../../components/Donor/Donor';
 
@@ -32,12 +34,54 @@ class Donors extends Component{
         for(let donor in donorsObj){
           donors.push({id : donor, ...donorsObj[donor]})
         }
-        this.setState({donors})
+        this.props.onSetDonors(donors);
+        this.handleChange(this.state.bloodGroup);
     })
   }
 
-  handleChange = event => {
-    this.setState({ [event.target.name]: event.target.value });
+  handleChange = bloodGroup => {
+    // const bloodGroup = event.target.value;
+    this.setState({ bloodGroup});
+    let donors = [];
+    if(bloodGroup === "AB+"){
+      donors = [...this.props.donors]
+    }
+    else if(bloodGroup === "AB-"){
+      donors = this.props.donors.filter(donor => {
+        return donor.bloodGroup === "A-" || donor.bloodGroup === "B-" || donor.bloodGroup === "O-" || donor.bloodGroup === "AB-" 
+      })
+    }
+    else if(bloodGroup === "A+"){
+      donors = this.props.donors.filter(donor => {
+        return donor.bloodGroup === "O+" || donor.bloodGroup === "O-" || donor.bloodGroup === "A+" || donor.bloodGroup === "A-" 
+      })
+    }
+    else if(bloodGroup === "A-"){
+      donors = this.props.donors.filter(donor => {
+        return donor.bloodGroup === "O-" || donor.bloodGroup === "A-" 
+      })
+    }
+    else if(bloodGroup === "B+"){
+      donors = this.props.donors.filter(donor => {
+        return donor.bloodGroup === "O+" || donor.bloodGroup === "O-" || donor.bloodGroup === "B+" || donor.bloodGroup === "B-" 
+      })
+    }
+    else if(bloodGroup === "B-"){
+      donors = this.props.donors.filter(donor => {
+        return donor.bloodGroup === "O-" || donor.bloodGroup === "B-" 
+      })
+    }
+    else if(bloodGroup === 'O+'){
+      donors = this.props.donors.filter(donor => {
+        return donor.bloodGroup === "O-" || donor.bloodGroup === "O+" 
+      })
+    }
+    else if(bloodGroup === 'O-'){
+      donors = this.props.donors.filter(donor => {
+        return donor.bloodGroup === "O-"
+      })
+    }
+    this.setState({donors})
   };
 
   render(){
@@ -47,7 +91,7 @@ class Donors extends Component{
             <InputLabel htmlFor="age-simple">Blood Group</InputLabel>
             <Select
               value={this.state.bloodGroup}
-              onChange={this.handleChange}
+              onChange={(event) => this.handleChange(event.target.value)}
               inputProps={{
               name: 'bloodGroup',
               id: 'bloodGroup',
@@ -82,4 +126,16 @@ class Donors extends Component{
   }
 }
 
-export default withStyles(styles)(Donors);
+const mapStateToProps = state => {
+  return{
+    donors : state.donors.donors
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return{
+    onSetDonors : (donors) => dispatch(actions.setDonors(donors))     
+  }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(withStyles(styles)(Donors));

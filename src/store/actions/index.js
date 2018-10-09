@@ -5,3 +5,7 @@ export {
     logout,
     registeredDonor
 } from './auth';
+
+export {
+    setDonors
+} from './donors';
