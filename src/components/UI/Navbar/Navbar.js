@@ -1,9 +1,10 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import StyledTabs from './Tabs/Tabs';
 import Tab from "@material-ui/core/Tab";
+import {withRouter} from 'react-router-dom';
+import {connect} from 'react-redux';
 // import BloodPic from '../../../assets/blood-drop.jpg';
 
 const styles = theme => ({
@@ -25,18 +26,32 @@ class Navbar extends React.Component {
     this.setState({ value });
   };
 
+  buttonClickedHandler = (path) => {
+      this.props.history.push(path);
+  }
   render() {
     const { classes } = this.props;
     const { value } = this.state;
 
+    let authButtonValue = '';
+    let authButtonPath = '/auth';
+    if(this.props.isAuth){
+      authButtonPath = "/logout"
+      authButtonValue = "Logout"
+    }
+    else  if(this.props.isSignup)
+      authButtonValue = "Sign up"
+    else
+      authButtonValue = "Sign in";
+      
     return (
       <div className={classes.root}>
        
         <AppBar position="static" className={classes.own}>
           <StyledTabs centered value={value} onChange={this.handleChange} >
-            <Tab label="Donors" />
-            <Tab label="Register as Donor" />
-            <Tab label="Logout" href="#basic-tabs" />
+            <Tab label="Donors" onClick ={() => this.buttonClickedHandler("/donors")} />
+            <Tab label="Register as Donor" onClick ={() => this.buttonClickedHandler("/registerDonor")}/>
+            <Tab label={authButtonValue} onClick ={() => this.buttonClickedHandler(authButtonPath)}/>
           </StyledTabs>
         </AppBar>
       </div>
@@ -44,8 +59,11 @@ class Navbar extends React.Component {
   }
 }
 
-Navbar.propTypes = {
-  classes: PropTypes.object.isRequired
-};
+const mapStateToProps = state => {
+    return{
+      isSignup : state.auth.isSignup,
+      isAuth : state.auth.isAuth
+    }
+}
 
-export default withStyles(styles)(Navbar);
+export default withRouter(connect(mapStateToProps)(withStyles(styles)(Navbar)));
