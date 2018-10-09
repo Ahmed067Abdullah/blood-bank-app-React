@@ -72,17 +72,12 @@ class Auth extends Component{
                 firebase.database().ref(`donors/${uid}`).once('value')
                     .then(res => {
                         this.props.onLogin(uid);
-                        if(res.val()){
+                        if(res.val())
                             this.props.onSetRegistered();
-                            console.log("isDonor");
-                        }
-                        else
-                            console.log("noDonor"); 
                         this.props.history.replace("/donors");
                     })
                     .catch(err => {
                         this.setState({error :err, loading : false})
-                        // this.props.history.replace("/donors");
                     })
             })    
             .catch(error =>{
@@ -137,6 +132,7 @@ class Auth extends Component{
                         <TextValidator
                             className = {this.props.classes.TextFields}
                             label="Password"
+                            type="password"
                             onChange={this.handleChange}
                             name="pass"
                             value={this.state.pass}

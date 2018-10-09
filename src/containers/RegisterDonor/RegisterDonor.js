@@ -38,7 +38,7 @@ class RegisterDonor extends Component{
         phone : '',
         age : '',
         area : '',
-        bloodGroup : '',
+        bloodGroup : 'A+',
         name : '',
         gender : 'male',
         loading : false,
@@ -66,6 +66,20 @@ class RegisterDonor extends Component{
             }
             return true;
         });
+
+        if(this.props.isDonor){
+            firebase.database().ref(`donors/${this.props.uid}`).once('value')
+                .then(snapshot =>{
+                    this.setState({
+                        name : snapshot.val().name,
+                        age :  snapshot.val().age,
+                        area :  snapshot.val().area,
+                        phone : snapshot.val().phone,
+                        gender : snapshot.val().gender,
+                        bloodGroup : snapshot.val().bloodGroup
+                    })
+                })
+        }
     }
     handleChange = (event) => {
         this.setState({ [event.target.name] : event.target.value });
@@ -148,18 +162,6 @@ class RegisterDonor extends Component{
                     validators={['required','matchRegexp:^[0-9]*$','isElevenDigits']}
                     errorMessages={['This field is required', 'Invalid Phone Number','Phone Number must have 11 digits']}
                 /><br/><br/>
-                {/* <FormControl component="fieldset" className={this.props.classes.formControl}> */}
-                    {/* <FormLabel component="legend">Gender</FormLabel>
-                    <RadioGroup
-                        aria-label="Gender"
-                        name="gender"
-                        className={this.props.classes.group}
-                        value={this.state.gender}
-                        onChange={this.handleChange}
-                    >
-                        <FormControlLabel value="female" control={<Radio />} label="Female"/>
-                        <FormControlLabel value="male" control={<Radio />} label="Male" />
-                    </RadioGroup> */}
                     <FormLabel component="legend">Gender</FormLabel>
                     <label><Radio
                         checked={this.state.gender === 'male'}
@@ -183,7 +185,7 @@ class RegisterDonor extends Component{
                     validators={['required', 'isOldEnough','matchRegexp:^[0-9]*$']}
                     errorMessages={['This field is required', 'You are not old enough to donate','Invalid Age']}
                 /><br/>
-                <Button type="submit">Submit</Button>
+                <Button type="submit">{this.props.isDonor ? "Update" : "Register"}</Button>
             </ValidatorForm>
             </Card>}
             </div>
@@ -193,7 +195,8 @@ class RegisterDonor extends Component{
 
 const mapStateToProps = state => {
     return{
-        uid : state.auth.uid
+        uid : state.auth.uid,
+        isDonor : state.auth.isDonor
     }
 }
 
