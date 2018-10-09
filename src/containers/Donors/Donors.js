@@ -4,6 +4,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import * as firebase from 'firebase';
 
 import Donor from '../../components/Donor/Donor';
 
@@ -20,35 +21,19 @@ class Donors extends Component{
 
   state = {
     bloodGroup : '',
-    donors : [{
-      name : "Ahmed",
-      age : "19",
-      area : "Bahadurabad",
-      bloodGroup : "B+",
-      phone : "090078601",
-      gender : "Male"
-    },{
-      name : "Ahmeda",
-      age : "19",
-      area : "Bahadurabad",
-      bloodGroup : "B+",
-      phone : "090078601",
-      gender : "Male"
-    },{
-      name : "Ahms",
-      age : "19",
-      area : "Bahadurabad",
-      bloodGroup : "B+",
-      phone : "090078601",
-      gender : "Male"
-    },{
-      name : "Ahmad",
-      age : "19",
-      area : "Bahadurabad",
-      bloodGroup : "B+",
-      phone : "090078601",
-      gender : "Male"
-    },]
+    donors : []
+  }
+
+  componentDidMount(){
+    let query = firebase.database().ref('donors/').orderByChild('bloodGroup')
+    query.on('value', snap => {
+      const donorsObj = snap.val();
+      const donors = [];
+        for(let donor in donorsObj){
+          donors.push({id : donor, ...donorsObj[donor]})
+        }
+        this.setState({donors})
+    })
   }
 
   handleChange = event => {
@@ -82,7 +67,8 @@ class Donors extends Component{
           </FormControl>
           {this.state.donors.map(donor => {
             return(
-              <Donor 
+              <Donor
+                key = {donor.name} 
                 name = {donor.name}
                 age = {donor.age}
                 area = {donor.area}

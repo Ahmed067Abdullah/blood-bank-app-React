@@ -28,7 +28,11 @@ const reducer = (state = initialState, action) => {
         case actionTypes.LOGOUT:
             return{
                 ...state,
-                isAuth : false
+                isAuth : false,
+                isSignup : true,
+                uid : '',
+                isDonor : false
+
             }
         case actionTypes.REGISTERED_DONOR:
             return{

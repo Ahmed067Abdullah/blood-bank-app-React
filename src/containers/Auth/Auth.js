@@ -49,8 +49,9 @@ class Auth extends Component{
         if(this.props.isSignup){
             firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.pass)
             .then(res => {
+                const uid = res.user.uid;
                 this.setState({loading : false});
-                this.props.onLogin(this.state.email);
+                this.props.onLogin(uid);
                 this.props.history.replace("/donors");
             })
             .catch(error => {
