@@ -43,10 +43,10 @@ class Navbar extends React.Component {
       authButtonValue = "Sign up"
     else
       authButtonValue = "Sign in";
-      
+
     return (
       <div className={classes.root}>
-       
+       {this.props.isAuth ? 
         <AppBar position="static" className={classes.own}>
           <StyledTabs centered value={value} onChange={this.handleChange} >
             <Tab label="Donors" onClick ={() => this.buttonClickedHandler("/donors")} />
@@ -54,6 +54,7 @@ class Navbar extends React.Component {
             <Tab label={authButtonValue} onClick ={() => this.buttonClickedHandler(authButtonPath)}/>
           </StyledTabs>
         </AppBar>
+        : null}
       </div>
     );
   }

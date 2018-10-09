@@ -6,22 +6,29 @@ import { connect } from 'react-redux';
 import * as actions from '../../store/actions/index';
 import * as firebase from 'firebase'
 
-import Card from '../../components/UI/Card/Card';
+import Card from '../../hoc/Card/Card';
+import Spinner from '../../components/UI/Spinner/Spinner';
 import './Auth.css';
 
 const styles = theme => {
     return {
         TextFields : {
             marginBottom : "20px",
-            width : "280px"
-        }
+            width : "95%"
+        },
+        button: {
+            margin: theme.spacing.unit,
+            marginBottom : "15px"
+          }
     }
 }
 
 class Auth extends Component{
     state = {
         email: '',
-        pass : ''
+        pass : '',
+        error : '',
+        loading : false
     }
 
     componentDidMount() {
@@ -38,35 +45,44 @@ class Auth extends Component{
     }
  
     handleSubmit = () => {
+        this.setState({loading : true});
         if(this.props.isSignup){
-            console.log("Signup")
             firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.pass)
             .then(res => {
+                this.setState({loading : false});
                 this.props.onLogin();
                 this.props.history.replace("/donors");
             })
             .catch(error => {
-                console.log(error);
-                // Handle Errors here.
-                // var errorCode = error.code;
-                var errorMessage = error.message;
-                console.log(errorMessage);
-
+                this.setState({loading : false});
+                this.props.onLoginEnd();
+                let errorMessage = '';
+                if(error.code === 'auth/email-already-in-use')
+                    errorMessage = "Account For This Email is Already Registered"
+                else if(error.code === 'auth/invalid-email')
+                    errorMessage = "Invalid Email"
+                else     
+                    errorMessage = error.message;
+                this.setState({error : errorMessage})
             });
         }
         else{
-            console.log("Sigin")
             firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.pass)
             .then(res =>{
+                this.setState({loading : false});
                 this.props.onLogin();
                 this.props.history.replace("/donors");
             })    
             .catch(error =>{
-                console.log(error);
-                // Handle Errors here.
-                // var errorCode = error.code;
-                // var errorMessage = error.message;
-                // ...
+                this.setState({loading : false});
+                let errorMessage = ''
+                if(error.code === 'auth/wrong-password')
+                    errorMessage = "Wrong Password";
+                else if(error.code === 'auth/user-not-found')  
+                    errorMessage = "User Doesn't Exist";  
+                else     
+                    errorMessage = error.message;                    
+                this.setState({error : errorMessage})
               });
         }
     }
@@ -88,34 +104,39 @@ class Auth extends Component{
         }
         return(
             <div  className = "Main">
-            <Card>
-            <ValidatorForm
-                ref="form"
-                onSubmit={this.handleSubmit}
-                onError={errors => console.log(errors)}
-            >
-                <TextValidator
-                    className = {this.props.classes.TextFields}
-                    label="Email"
-                    onChange={this.handleChange}
-                    name="email"
-                    value={this.state.email}
-                    validators={['required', 'isEmail']}
-                    errorMessages={['This field is required', 'Invalid Email']}
-                /><br/>
-                <TextValidator
-                    className = {this.props.classes.TextFields}
-                    label="Password"
-                    onChange={this.handleChange}
-                    name="pass"
-                    value={this.state.pass}
-                    validators={['required', 'isLongEnough']}
-                    errorMessages={['This field is required', 'Password must be longer than 6 characters']}
-                /><br/>
-                <Button type="submit">Submit</Button>
-            </ValidatorForm>
-            <p>{authMessage}<strong style = {{ textDecoration : 'underline', cursor : 'pointer'}} onClick = {this.switchAuthState}>{authLink}</strong></p>
-            </Card>
+            <p className="h1 heading">Blood Bank App</p>
+            {!this.state.loading ?
+                <Card>
+                    <p className = "Error">{this.state.error ? this.state.error  : null}</p>
+                    <ValidatorForm
+                        ref="form"
+                        onSubmit={this.handleSubmit}
+                        onError={errors => console.log(errors)}
+                    >
+                        <TextValidator
+                            className = {this.props.classes.TextFields}
+                            label="Email"
+                            onChange={this.handleChange}
+                            name="email"
+                            value={this.state.email}
+                            validators={['required', 'isEmail']}
+                            errorMessages={['This field is required', 'Invalid Email']}
+                        /><br/>
+                        <TextValidator
+                            className = {this.props.classes.TextFields}
+                            label="Password"
+                            onChange={this.handleChange}
+                            name="pass"
+                            value={this.state.pass}
+                            validators={['required', 'isLongEnough']}
+                            errorMessages={['This field is required', 'Password must be longer than 6 characters']}
+                        /><br/>
+                        <Button type="submit" variant="contained" color="secondary" className={this.props.classes.button}>
+                            Submit
+                        </Button>
+                    </ValidatorForm>
+                    <p>{authMessage}<strong style = {{ textDecoration : 'underline', cursor : 'pointer'}} onClick = {this.switchAuthState}>{authLink}</strong></p>
+                </Card> : <Spinner/>}
             </div>
         )
     }

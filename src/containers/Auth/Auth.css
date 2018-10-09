@@ -4,6 +4,16 @@
     padding : 15px;
 }
 
+.heading{
+    margin-bottom: 50px;
+    color : #af111c;
+}
+
+.Error{
+    color : red;
+    font-weight: bold;
+}
+
 @media(min-width : 500px){
     .Main{
         width: 450px;

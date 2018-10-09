@@ -26,7 +26,7 @@ const reducer = (state = initialState, action) => {
             return{
                 ...state,
                 isAuth : false
-            }        
+            }            
         default:
             return state;     
     }
