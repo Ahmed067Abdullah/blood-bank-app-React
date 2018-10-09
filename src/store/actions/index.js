@@ -2,5 +2,6 @@ export {
     setSignin,
     setSignup,
     login,
-    logout
+    logout,
+    registeredDonor
 } from './auth';

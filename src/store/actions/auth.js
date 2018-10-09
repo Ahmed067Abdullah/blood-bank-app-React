@@ -12,9 +12,10 @@ export const setSignup = () => {
     }
 }
 
-export const login = () => {
+export const login = (uid) => {
     return{
-        type : actionTypes.LOGIN
+        type : actionTypes.LOGIN,
+        uid
     }
 }
 
@@ -24,3 +25,8 @@ export const logout = () => {
     }
 }
 
+export const registeredDonor = () => {
+    return{
+        type : actionTypes.REGISTERED_DONOR
+    }
+}

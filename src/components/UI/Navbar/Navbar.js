@@ -44,13 +44,17 @@ class Navbar extends React.Component {
     else
       authButtonValue = "Sign in";
 
+    let registerButtonValue = "Register as Donor";
+    if(this.props.isDonor)
+      registerButtonValue = "Update Profile"
+
     return (
       <div className={classes.root}>
        {this.props.isAuth ? 
         <AppBar position="static" className={classes.own}>
           <StyledTabs centered value={value} onChange={this.handleChange} >
             <Tab label="Donors" onClick ={() => this.buttonClickedHandler("/donors")} />
-            <Tab label="Register as Donor" onClick ={() => this.buttonClickedHandler("/registerDonor")}/>
+            <Tab label={registerButtonValue} onClick ={() => this.buttonClickedHandler("/registerDonor")}/>
             <Tab label={authButtonValue} onClick ={() => this.buttonClickedHandler(authButtonPath)}/>
           </StyledTabs>
         </AppBar>
@@ -63,7 +67,8 @@ class Navbar extends React.Component {
 const mapStateToProps = state => {
     return{
       isSignup : state.auth.isSignup,
-      isAuth : state.auth.isAuth
+      isAuth : state.auth.isAuth,
+      isDonor : state.auth.isDonor
     }
 }
 

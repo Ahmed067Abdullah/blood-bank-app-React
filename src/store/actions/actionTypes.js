@@ -4,3 +4,4 @@ export const LOGIN_BEGIN = 'LOGIN_BEGIN';
 export const LOGIN_END = 'LOGIN_END';
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
+export const REGISTERED_DONOR = 'REGISTERED_DONOR';

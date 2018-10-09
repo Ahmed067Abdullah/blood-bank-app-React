@@ -50,12 +50,11 @@ class Auth extends Component{
             firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.pass)
             .then(res => {
                 this.setState({loading : false});
-                this.props.onLogin();
+                this.props.onLogin(this.state.email);
                 this.props.history.replace("/donors");
             })
             .catch(error => {
                 this.setState({loading : false});
-                this.props.onLoginEnd();
                 let errorMessage = '';
                 if(error.code === 'auth/email-already-in-use')
                     errorMessage = "Account For This Email is Already Registered"
@@ -69,9 +68,22 @@ class Auth extends Component{
         else{
             firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.pass)
             .then(res =>{
-                this.setState({loading : false});
-                this.props.onLogin();
-                this.props.history.replace("/donors");
+                const uid = res.user.uid;
+                firebase.database().ref(`donors/${uid}`).once('value')
+                    .then(res => {
+                        this.props.onLogin(uid);
+                        if(res.val()){
+                            this.props.onSetRegistered();
+                            console.log("isDonor");
+                        }
+                        else
+                            console.log("noDonor"); 
+                        this.props.history.replace("/donors");
+                    })
+                    .catch(err => {
+                        this.setState({error :err, loading : false})
+                        // this.props.history.replace("/donors");
+                    })
             })    
             .catch(error =>{
                 this.setState({loading : false});
@@ -151,10 +163,11 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return{
-        onLogin : () => dispatch(actions.login()),
+        onLogin : (uid) => dispatch(actions.login(uid)),
         onLogout : () => dispatch(actions.logout()),
         onSignin : () => dispatch(actions.setSignin()),
-        onSignup : () => dispatch(actions.setSignup())
+        onSignup : () => dispatch(actions.setSignup()),
+        onSetRegistered : () => dispatch(actions.registeredDonor())
     }
 }
 

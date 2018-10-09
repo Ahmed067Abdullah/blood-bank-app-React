@@ -8,24 +8,27 @@ import { withStyles } from "@material-ui/core/styles";
 import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 import Card from '../../hoc/Card/Card';
 import './RegisterDonor.css';
-
 import Radio from '@material-ui/core/Radio';
 import FormLabel from '@material-ui/core/FormLabel';
+import * as firebase from 'firebase';
+import Spinner from '../../components/UI/Spinner/Spinner';
+import {connect} from 'react-redux';
+import * as actions from '../../store/actions/index';
 
 const styles = theme => {
     return {
         TextFields : {
             marginBottom : "10px",
             marginTop : "10px",
-            width : "280px"
+            width : "95%"
         }, 
         formControl: {
-            width: "280px",
+            width: "95%",
         },
         LastTextField : {
             marginBottom : "10px",
             marginTop : "-10px",
-            width : "280px"
+            width : "95%"
         },
     }
 }
@@ -37,7 +40,9 @@ class RegisterDonor extends Component{
         area : '',
         bloodGroup : '',
         name : '',
-        gender : 'male'
+        gender : 'male',
+        loading : false,
+        error : null
     }
 
     componentDidMount() {
@@ -67,12 +72,31 @@ class RegisterDonor extends Component{
     }
  
     handleSubmit = () => {
-        // your submit logic
+        this.setState({loading : true});
+        const database = firebase.database();
+        const {name,age,area,bloodGroup,gender,phone} = this.state;
+        database.ref(`donors/${this.props.uid}`).set({
+            name,
+            age,
+            area,
+            bloodGroup,
+            gender,
+            phone,    
+        })
+        .then(res => {
+            this.setState({loading : false, error : null});
+            this.props.onSetRegistered();
+        })
+        .catch(err => {
+            this.setState({loading : false, error : err});
+        })
     }
     render(){
         return(
             <div  className = "Main">
+            {this.state.loading ? <Spinner/> : 
             <Card>
+            <p className = "Error">{this.state.error ? this.state.error  : null}</p>                
             <ValidatorForm
                 ref="form"
                 onSubmit={this.handleSubmit}
@@ -161,10 +185,21 @@ class RegisterDonor extends Component{
                 /><br/>
                 <Button type="submit">Submit</Button>
             </ValidatorForm>
-            </Card>
+            </Card>}
             </div>
         )
     }
 }
 
-export default withStyles(styles)(RegisterDonor);
+const mapStateToProps = state => {
+    return{
+        uid : state.auth.uid
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return{
+        onSetRegistered : () => dispatch(actions.registeredDonor())        
+    }
+}
+export default connect(mapStateToProps,mapDispatchToProps)(withStyles(styles)(RegisterDonor));

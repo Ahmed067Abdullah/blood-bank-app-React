@@ -4,6 +4,11 @@
     padding : 15px;
 }
 
+.Error{
+    color : red;
+    font-weight: bold;
+}
+
 @media(min-width : 500px){
     .Main{
         width: 450px;

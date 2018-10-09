@@ -2,7 +2,9 @@ import * as actionTypes from '../actions/actionTypes';
 
 const initialState = {
     isAuth : false,
-    isSignup : true
+    isSignup : false,
+    uid : '',
+    isDonor : false
 }
 
 const reducer = (state = initialState, action) => {
@@ -20,12 +22,18 @@ const reducer = (state = initialState, action) => {
         case actionTypes.LOGIN : 
             return{
                 ...state,
-                isAuth : true
+                isAuth : true,
+                uid : action.uid
             }
         case actionTypes.LOGOUT:
             return{
                 ...state,
                 isAuth : false
+            }
+        case actionTypes.REGISTERED_DONOR:
+            return{
+                ...state,
+                isDonor : true
             }            
         default:
             return state;     
