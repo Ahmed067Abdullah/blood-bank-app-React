@@ -1,11 +1,14 @@
 import React, {Component} from 'react';
 import {Route, Switch, withRouter, Redirect} from 'react-router-dom';
 import {connect} from 'react-redux';
+
 import Navbar from '.././../components/UI/Navbar/Navbar';
+import Aux from '../../hoc/Auxiliary/Auxiliary';
+
+// Containers to be rendered using routing
 import Auth from '../../containers/Auth/Auth';
 import RegisterDonor from '../../containers/RegisterDonor/RegisterDonor';
 import Donors from '../../containers/Donors/Donors';
-import Aux from '../../hoc/Auxiliary/Auxiliary';
 import Logout from '../../containers/Auth/Logout/Logout';
 
 class Layout extends Component{

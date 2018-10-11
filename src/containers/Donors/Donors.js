@@ -1,14 +1,18 @@
 import React, {Component} from 'react';
+import * as firebase from 'firebase';
+import {connect} from 'react-redux';
+
+import * as actions from '../../store/actions/index';
+import Donor from '../../components/Donor/Donor';
+import './Donors.css';
+
+// Material UI Imports start
 import { withStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import * as firebase from 'firebase';
-import * as actions from '../../store/actions/index';
-import {connect} from 'react-redux';
-
-import Donor from '../../components/Donor/Donor';
+// Material UI Imports end
 
 const styles = theme => ({
   formControl: {
@@ -40,7 +44,6 @@ class Donors extends Component{
   }
 
   handleChange = bloodGroup => {
-    // const bloodGroup = event.target.value;
     this.setState({ bloodGroup});
     let donors = [];
     if(bloodGroup === "AB+"){
@@ -85,6 +88,26 @@ class Donors extends Component{
   };
 
   render(){
+      let donors = ''
+      if(this.state.bloodGroup === '')
+        donors = <p>Select a Blood Group To Continue</p>
+      else if(this.state.donors.length <= 0)  
+        donors = <p>Sorry, No Donors are Available for the Selected Blood Group</p>
+      else{
+        donors = this.state.donors.map(donor => {
+          return(
+            <Donor
+              key = {donor.name} 
+              name = {donor.name}
+              age = {donor.age}
+              area = {donor.area}
+              bloodGroup = {donor.bloodGroup}
+              gender = {donor.gender}
+              phone = {donor.phone}/>
+          )
+        })
+      }
+      
       return(
         <div>
           <FormControl className={this.props.classes.formControl}>
@@ -96,9 +119,7 @@ class Donors extends Component{
               name: 'bloodGroup',
               id: 'bloodGroup',
             }}>
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
+              <MenuItem value=""><em>None</em></MenuItem>
               <MenuItem value={"A+"}>A+</MenuItem>
               <MenuItem value={"A-"}>A-</MenuItem>
               <MenuItem value={"B+"}>B+</MenuItem>
@@ -109,18 +130,9 @@ class Donors extends Component{
               <MenuItem value={"O-"}>O-</MenuItem>
             </Select>
           </FormControl>
-          {this.state.donors.map(donor => {
-            return(
-              <Donor
-                key = {donor.name} 
-                name = {donor.name}
-                age = {donor.age}
-                area = {donor.area}
-                bloodGroup = {donor.bloodGroup}
-                gender = {donor.gender}
-                phone = {donor.phone}/>
-            )
-          })}
+          <div className = "Donors">
+          {donors}
+          </div>
       </div>      
       )
   }

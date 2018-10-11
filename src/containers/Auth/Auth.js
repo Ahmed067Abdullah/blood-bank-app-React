@@ -1,14 +1,17 @@
 import React, {Component} from 'react';
-import Button from '@material-ui/core/Button';
-import { withStyles } from "@material-ui/core/styles";
+import * as firebase from 'firebase'
 import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 import { connect } from 'react-redux';
-import * as actions from '../../store/actions/index';
-import * as firebase from 'firebase'
 
+import * as actions from '../../store/actions/index';
 import Card from '../../hoc/Card/Card';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import './Auth.css';
+
+// Material UI Imports start
+import Button from '@material-ui/core/Button';
+import { withStyles } from "@material-ui/core/styles";
+// Material UI Imports end
 
 const styles = theme => {
     return {
@@ -19,7 +22,11 @@ const styles = theme => {
         button: {
             margin: theme.spacing.unit,
             marginBottom : "15px"
-          }
+        },
+        authMessage :{ 
+            textDecoration : 'underline', 
+            cursor : 'pointer'
+        }
     }
 }
 
@@ -91,18 +98,14 @@ class Auth extends Component{
                 else     
                     errorMessage = error.message;                    
                 this.setState({error : errorMessage})
-              });
+            });
         }
     }
 
     switchAuthState = () => {
-        if(this.props.isSignup){
-            this.props.onSignin()
-        }
-        else{
-            this.props.onSignup()
-        }
+        this.props.isSignup ? this.props.onSignin() : this.props.onSignup()
     }
+
     render(){
         let authMessage = "Already Have an Account? ";
         let authLink = "Sign in";
@@ -112,15 +115,14 @@ class Auth extends Component{
         }
         return(
             <div  className = "Main">
-            <p className="h1 heading">Blood Bank App</p>
+            <p className="h1 heading font-weight-bold text-uppercase">Blood Bank</p>
             {!this.state.loading ?
                 <Card>
                     <p className = "Error">{this.state.error ? this.state.error  : null}</p>
                     <ValidatorForm
                         ref="form"
                         onSubmit={this.handleSubmit}
-                        onError={errors => console.log(errors)}
-                    >
+                        onError={errors => console.log(errors)}>
                         <TextValidator
                             className = {this.props.classes.TextFields}
                             label="Email"
@@ -140,12 +142,14 @@ class Auth extends Component{
                             validators={['required', 'isLongEnough']}
                             errorMessages={['This field is required', 'Password must be longer than 6 characters']}
                         /><br/>
-                        <Button type="submit" variant="contained" color="secondary" className={this.props.classes.button}>
-                            Submit
-                        </Button>
+                        <Button 
+                            type="submit" 
+                            variant="contained" 
+                            color="secondary" 
+                            className={this.props.classes.button}>Submit</Button>
                     </ValidatorForm>
-                    <p>{authMessage}<strong style = {{ textDecoration : 'underline', cursor : 'pointer'}} onClick = {this.switchAuthState}>{authLink}</strong></p>
-                </Card> : <Spinner/>}
+                    <p>{authMessage}<strong className = {this.props.classes.authMessage} onClick = {this.switchAuthState}>{authLink}</strong></p>
+                </Card> : <div  className = "auth-spinner"><Spinner/></div>}
             </div>
         )
     }

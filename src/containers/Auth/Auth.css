@@ -14,6 +14,10 @@
     font-weight: bold;
 }
 
+.auth-spinner{
+    margin-top: 150px;
+}
+
 @media(min-width : 500px){
     .Main{
         width: 450px;
