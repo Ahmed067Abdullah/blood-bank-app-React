@@ -1,4 +1,4 @@
-import Tabs from "@material-ui/core/Tabs";
+import Tabs from "@material-ui/core/Tabs"; 
 import { withStyles } from "@material-ui/core/styles";
 
 const style = {

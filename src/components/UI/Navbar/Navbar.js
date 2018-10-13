@@ -2,8 +2,6 @@ import React from "react";
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 
-import Aux from '../../../hoc/Auxiliary/Auxiliary';
-
 // Material UI Imports start
 import { withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
@@ -22,6 +20,7 @@ const styles = theme => ({
 });
 
 class Navbar extends React.Component {
+  
   state = {
     value: 0
   };
@@ -33,10 +32,14 @@ class Navbar extends React.Component {
   buttonClickedHandler = (path) => {
       this.props.history.push(path);
   }
+
+  logout = () => {
+    this.setState({value : 0});
+    this.buttonClickedHandler("/logout");
+  }
   render() {
     const { classes } = this.props;
     const { value } = this.state;
-
     let registerButtonValue = "Register as Donor";
     if(this.props.isDonor)
       registerButtonValue = "Update Profile"
@@ -45,16 +48,15 @@ class Navbar extends React.Component {
       <div className={classes.root}>
         <AppBar position="static" className={classes.own}>
           <StyledTabs centered value={value} onChange={this.handleChange}>
-            {this.props.isAuth ? <Aux><Tab label="Donors" onClick ={() => this.buttonClickedHandler("/donors")} />
-              <Tab label={registerButtonValue} onClick ={() => this.buttonClickedHandler("/registerDonor")}/>
-              <Tab label="Logout" onClick ={() => this.buttonClickedHandler("/logout")}/></Aux> : null}
+          {this.props.isAuth ? <Tab label="Donors" onClick ={() => this.buttonClickedHandler("/donors")}/>  : null}
+          {this.props.isAuth ? <Tab label={registerButtonValue} onClick ={() => this.buttonClickedHandler("/registerDonor")}/> : null}
+          {this.props.isAuth ? <Tab label="Logout" onClick ={this.logout} />: null}
           </StyledTabs>
         </AppBar>
       </div>
     );
   }
 }
-
 const mapStateToProps = state => {
     return{
       isAuth : state.auth.isAuth,
