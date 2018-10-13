@@ -16,7 +16,10 @@ import Select from '@material-ui/core/Select';
 import { withStyles } from "@material-ui/core/styles";
 import { ValidatorForm, TextValidator} from 'react-material-ui-form-validator';
 import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
 import FormLabel from '@material-ui/core/FormLabel';
+import FormControlLabel from '../../components/UI/Forms/FormControlLabel/FormControlLabel';
+import Switch from "@material-ui/core/Switch";
 // Material UI Imports ens
 
 const styles = theme => {
@@ -45,6 +48,7 @@ class RegisterDonor extends Component{
         bloodGroup : 'A+',
         name : '',
         gender : 'male',
+        available : true,
         loading : false,
         error : null
     }
@@ -74,13 +78,15 @@ class RegisterDonor extends Component{
         if(this.props.isDonor){
             firebase.database().ref(`donors/${this.props.uid}`).once('value')
                 .then(snapshot =>{
+                    const snapshotObj = snapshot.val();
                     this.setState({
-                        name : snapshot.val().name,
-                        age :  snapshot.val().age,
-                        area :  snapshot.val().area,
-                        phone : snapshot.val().phone,
-                        gender : snapshot.val().gender,
-                        bloodGroup : snapshot.val().bloodGroup
+                        name : snapshotObj.name,
+                        age :  snapshotObj.age,
+                        area :  snapshotObj.area,
+                        phone : snapshotObj.phone,
+                        gender : snapshotObj.gender,
+                        bloodGroup : snapshotObj.bloodGroup,
+                        available : snapshotObj.available
                     })
                 })
         }
@@ -88,11 +94,15 @@ class RegisterDonor extends Component{
     handleChange = (event) => {
         this.setState({ [event.target.name] : event.target.value });
     }
+
+    switchAvailability = name => event => {
+        this.setState({ [name]: event.target.checked });
+      };
  
     handleSubmit = () => {
         this.setState({loading : true});
         const database = firebase.database();
-        const {name,age,area,bloodGroup,gender,phone} = this.state;
+        const {name,age,area,bloodGroup,gender,phone,available} = this.state;
         database.ref(`donors/${this.props.uid}`).set({
             name,
             age,
@@ -100,6 +110,7 @@ class RegisterDonor extends Component{
             bloodGroup,
             gender,
             phone,    
+            available
         })
         .then(res => {
             this.setState({loading : false, error : null});
@@ -129,7 +140,26 @@ class RegisterDonor extends Component{
                         validators={['required','isSmallEnough']}
                         errorMessages={['This field is required', 'Maximum 255 Characters are allowed']}/><br/>
                     
-                    <FormControl className={this.props.classes.formControl}>
+                    <TextValidator
+                        className = {this.props.classes.TextFields}
+                        label="Age"
+                        onChange={this.handleChange}
+                        name="age"
+                        value={this.state.age}
+                        validators={['required', 'isOldEnough','matchRegexp:^[0-9]*$']}
+                        errorMessages={['This field is required', 'You are not old enough to donate','Invalid Age']}/><br/><br/>
+                    
+                    <FormLabel component="legend">Gender</FormLabel>
+                    <RadioGroup
+                        aria-label="Gender"
+                        name="gender"
+                        value={this.state.gender}
+                        onChange={this.handleChange}>
+                        <FormControlLabel value="female" control={<Radio />} label="Female" />
+                        <FormControlLabel value="male" control={<Radio />} label="Male" />
+                    </RadioGroup>
+
+                    <FormControl className={this.props.classes.TextFields}>
                         <InputLabel htmlFor="bg">Blood Group</InputLabel>
                         <Select
                             value={this.state.bloodGroup}
@@ -151,49 +181,34 @@ class RegisterDonor extends Component{
                     
                     <TextValidator
                         className = {this.props.classes.TextFields}
+                        label="Phone Number"
+                        onChange={this.handleChange}
+                        name="phone"
+                        value={this.state.phone}
+                        validators={['required','matchRegexp:^[0-9]*$','isElevenDigits']}
+                        errorMessages={['This field is required', 'Invalid Phone Number','Phone Number must have 11 digits']}/><br/>
+
+                    <TextValidator
+                        className = {this.props.classes.TextFields}
                         label="Area"
                         onChange={this.handleChange}
                         name="area"
                         value={this.state.area}
                         validators={['required','isSmallEnough']}
                         errorMessages={['This field is required', 'Maximum 255 Characters are allowed']}/><br/>
+                    
+                    <FormControlLabel
+                        control={<Switch
+                                    checked={this.state.available}
+                                    onChange={this.switchAvailability('available')}
+                                    value="available"/>}
+                        label="Available"
+                        labelPlacement = "start"/><br/>
 
-                    <TextValidator
-                        className = {this.props.classes.TextFields}
-                        label="Phone Number"
-                        onChange={this.handleChange}
-                        name="phone"
-                        value={this.state.phone}
-                        validators={['required','matchRegexp:^[0-9]*$','isElevenDigits']}
-                        errorMessages={['This field is required', 'Invalid Phone Number','Phone Number must have 11 digits']}/><br/><br/>
-                        
-                    <FormLabel component="legend">Gender</FormLabel>
-                        <label>
-                            <Radio
-                                checked={this.state.gender === 'male'}
-                                onChange={this.handleChange}
-                                value="male"
-                                name="gender"/>
-                        Male</label>
-                        
-                        <label>
-                            <Radio
-                                checked={this.state.gender === 'female'}
-                                onChange={this.handleChange}
-                                value="female"
-                                name="gender"/>
-                        Female</label>
-
-                    <TextValidator
-                        className = {this.props.classes.LastTextField}
-                        label="Age"
-                        onChange={this.handleChange}
-                        name="age"
-                        value={this.state.age}
-                        validators={['required', 'isOldEnough','matchRegexp:^[0-9]*$']}
-                        errorMessages={['This field is required', 'You are not old enough to donate','Invalid Age']}/><br/>
-
-                    <Button type="submit">{this.props.isDonor ? "Update" : "Register"}</Button>
+                    <Button 
+                        variant="contained" 
+                        color="secondary" 
+                        type="submit">{this.props.isDonor ? "Update" : "Register"}</Button>
                 </ValidatorForm>
             </Card>}
             </div>

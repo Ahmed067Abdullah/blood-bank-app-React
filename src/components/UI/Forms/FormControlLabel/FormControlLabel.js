@@ -3,9 +3,12 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 const styles = {
     root: {
-        display : "inline-block",
-        width : "30%"
+        marginLeft : "0px",
+        marginTop : "-20px"
     },
+    labelPlacementStart :{
+        marginTop : "0px"
+    }
   }
 
 export default withStyles(styles)(FormControlLabel)

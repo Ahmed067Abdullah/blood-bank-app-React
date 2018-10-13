@@ -31,16 +31,20 @@ class Donors extends Component{
   }
 
   componentDidMount(){
-    let query = firebase.database().ref('donors/').orderByChild('bloodGroup')
-    query.on('value', snap => {
-      const donorsObj = snap.val();
-      const donors = [];
-        for(let donor in donorsObj){
-          donors.push({id : donor, ...donorsObj[donor]})
-        }
-        this.props.onSetDonors(donors);
-        this.handleChange(this.state.bloodGroup);
-    })
+    firebase.database()
+      .ref('donors/')
+      .orderByChild('available')
+      .equalTo(true)
+      .on('value', snap => {
+        const donorsObj = snap.val();
+        const donors = [];
+          for(let donor in donorsObj){
+            if(donorsObj[donor].available)
+              donors.push({id : donor, ...donorsObj[donor]})
+          }
+          this.props.onSetDonors(donors);
+          this.handleChange(this.state.bloodGroup);
+      })
   }
 
   handleChange = bloodGroup => {
