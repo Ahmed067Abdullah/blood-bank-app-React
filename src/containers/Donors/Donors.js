@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 
 import * as actions from '../../store/actions/index';
 import Donor from '../../components/Donor/Donor';
+import BloodPic from '../../components/BloodPic/BloodPic';
 import './Donors.css';
 
 // Material UI Imports start
@@ -27,7 +28,8 @@ class Donors extends Component{
 
   state = {
     bloodGroup : '',
-    donors : []
+    donors : [],
+    possibleGroups : ''
   }
 
   componentDidMount(){
@@ -50,45 +52,54 @@ class Donors extends Component{
   handleChange = bloodGroup => {
     this.setState({ bloodGroup});
     let donors = [];
+    let possibleGroups = '';
     if(bloodGroup === "AB+"){
-      donors = [...this.props.donors]
+      donors = [...this.props.donors];
+      possibleGroups = 'all';
     }
     else if(bloodGroup === "AB-"){
       donors = this.props.donors.filter(donor => {
         return donor.bloodGroup === "A-" || donor.bloodGroup === "B-" || donor.bloodGroup === "O-" || donor.bloodGroup === "AB-" 
       })
+      possibleGroups = 'AB-, A-, B- and O-';
     }
     else if(bloodGroup === "A+"){
       donors = this.props.donors.filter(donor => {
         return donor.bloodGroup === "O+" || donor.bloodGroup === "O-" || donor.bloodGroup === "A+" || donor.bloodGroup === "A-" 
       })
+      possibleGroups = 'A+, A-, O+ and O-';
     }
     else if(bloodGroup === "A-"){
       donors = this.props.donors.filter(donor => {
         return donor.bloodGroup === "O-" || donor.bloodGroup === "A-" 
       })
+      possibleGroups = 'A- and O-';
     }
     else if(bloodGroup === "B+"){
       donors = this.props.donors.filter(donor => {
         return donor.bloodGroup === "O+" || donor.bloodGroup === "O-" || donor.bloodGroup === "B+" || donor.bloodGroup === "B-" 
       })
+      possibleGroups = 'B+, B-, O+ and O-';
     }
     else if(bloodGroup === "B-"){
       donors = this.props.donors.filter(donor => {
         return donor.bloodGroup === "O-" || donor.bloodGroup === "B-" 
       })
+      possibleGroups = 'B- and O-';
     }
     else if(bloodGroup === 'O+'){
       donors = this.props.donors.filter(donor => {
         return donor.bloodGroup === "O-" || donor.bloodGroup === "O+" 
       })
+      possibleGroups = 'O+ and O-';
     }
     else if(bloodGroup === 'O-'){
       donors = this.props.donors.filter(donor => {
         return donor.bloodGroup === "O-"
       })
+      possibleGroups = 'O-';
     }
-    this.setState({donors})
+    this.setState({donors, possibleGroups})
   };
 
   render(){
@@ -113,29 +124,38 @@ class Donors extends Component{
       }
       
       return(
-        <div>
-          <FormControl className={this.props.classes.formControl}>
-            <InputLabel htmlFor="age-simple">Blood Group</InputLabel>
-            <Select
-              value={this.state.bloodGroup}
-              onChange={(event) => this.handleChange(event.target.value)}
-              inputProps={{
-              name: 'bloodGroup',
-              id: 'bloodGroup',
-            }}>
-              <MenuItem value=""><em>None</em></MenuItem>
-              <MenuItem value={"A+"}>A+</MenuItem>
-              <MenuItem value={"A-"}>A-</MenuItem>
-              <MenuItem value={"B+"}>B+</MenuItem>
-              <MenuItem value={"B-"}>B-</MenuItem>
-              <MenuItem value={"AB+"}>AB+</MenuItem>
-              <MenuItem value={"AB-"}>AB-</MenuItem>
-              <MenuItem value={"O+"}>O+</MenuItem>
-              <MenuItem value={"O-"}>O-</MenuItem>
-            </Select>
-          </FormControl>
-          <div className = "Donors">
-          {donors}
+        <div className = "main-container">
+          <div className = "left">
+              <BloodPic/>
+          </div>
+          <div className = "center">
+            <FormControl className={this.props.classes.formControl}>
+              <InputLabel htmlFor="age-simple">Blood Group</InputLabel>
+              <Select
+                value={this.state.bloodGroup}
+                onChange={(event) => this.handleChange(event.target.value)}
+                inputProps={{
+                name: 'bloodGroup',
+                id: 'bloodGroup',
+              }}>
+                <MenuItem value=""><em>None</em></MenuItem>
+                <MenuItem value={"A+"}>A+</MenuItem>
+                <MenuItem value={"A-"}>A-</MenuItem>
+                <MenuItem value={"B+"}>B+</MenuItem>
+                <MenuItem value={"B-"}>B-</MenuItem>
+                <MenuItem value={"AB+"}>AB+</MenuItem>
+                <MenuItem value={"AB-"}>AB-</MenuItem>
+                <MenuItem value={"O+"}>O+</MenuItem>
+                <MenuItem value={"O-"}>O-</MenuItem>
+              </Select>
+            </FormControl>
+            {this.state.bloodGroup ? <p className = "Error">{this.state.bloodGroup} can recieve blood from {this.state.possibleGroups} group{this.state.bloodGroup !== 'O-' ? "s" : null}</p> : null}
+            <div className = "Donors">
+            {donors}
+            </div>
+          </div>
+          <div className = "right">
+            <BloodPic/>
           </div>
       </div>      
       )

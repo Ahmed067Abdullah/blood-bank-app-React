@@ -146,7 +146,7 @@ class Auth extends Component{
                             type="submit" 
                             variant="contained" 
                             color="secondary" 
-                            className={this.props.classes.button}>Submit</Button>
+                            className={this.props.classes.button}>{this.props.isSignup ? "Sign Up" : "Sign In"}</Button>
                     </ValidatorForm>
                     <p>{authMessage}<strong className = {this.props.classes.authMessage} onClick = {this.switchAuthState}>{authLink}</strong></p>
                 </Card> : <div  className = "auth-spinner"><Spinner/></div>}
