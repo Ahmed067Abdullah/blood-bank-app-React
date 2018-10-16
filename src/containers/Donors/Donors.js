@@ -102,6 +102,20 @@ class Donors extends Component{
     this.setState({donors, possibleGroups})
   };
 
+  clickedHandler = (id) => {
+
+    let requestedDonor = this.state.donors.find((donor) => {
+      return donor.id === id
+    });
+    if(!requestedDonor.requestedBy)
+      requestedDonor.requestedBy = [];
+    requestedDonor.requestedBy.push(this.props.uid);
+
+    firebase.database().ref(`donors/${id}/`).update({
+      requestedBy : requestedDonor.requestedBy
+    })
+  }
+
   render(){
       let donors = ''
       if(this.state.bloodGroup === '')
@@ -112,12 +126,14 @@ class Donors extends Component{
         donors = this.state.donors.map(donor => {
           return(
             <Donor
-              key = {donor.name} 
+              key = {donor.id} 
               name = {donor.name}
               age = {donor.age}
               area = {donor.area}
               bloodGroup = {donor.bloodGroup}
               gender = {donor.gender}
+              disabled = {!this.props.isDonor}
+              clicked = {() => this.clickedHandler(donor.id)}
               phone = {donor.phone}/>
           )
         })
@@ -164,7 +180,9 @@ class Donors extends Component{
 
 const mapStateToProps = state => {
   return{
-    donors : state.donors.donors
+    donors : state.donors.donors,
+    uid : state.auth.uid,
+    isDonor : state.auth.isDonor
   }
 }
 

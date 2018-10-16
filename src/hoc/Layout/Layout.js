@@ -17,7 +17,6 @@ class Layout extends Component{
             <Switch>
                 <Route path = "/auth" component = {Auth}/>
                 <Route path = "/" exact component = {Auth}/>
-                <Route path = "/donors" component = {Donors}/>
                 <Redirect to = "/"/>
             </Switch>            
         )

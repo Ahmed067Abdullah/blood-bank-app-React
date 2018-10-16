@@ -1,6 +1,6 @@
-.Main {
-    margin : 70px auto;
-    width : 90%;
+.main {
+    margin-top : 70px;
+    width : 100%;
     padding : 15px;
 }
 
@@ -10,7 +10,17 @@
 }
 
 @media(min-width : 500px){
-    .Main{
-        width: 450px;
+    .content-container{
+        display: flex;
     }
+    .register-form{
+        flex: 3;
+        width: 100%;
+        margin: 0 12%;
+    }
+    .requests{
+        flex: 2;
+        margin-left: 12%;
+    }
+    
 }

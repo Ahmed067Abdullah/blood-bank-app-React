@@ -1,6 +1,6 @@
 import React from 'react';
 
-import './Donors.css';
+// import './Donors.css';
 
 // Material UI Imports start
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
@@ -26,12 +26,10 @@ const donor = (props) => {
     return(
         <ExpansionPanel>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography className={props.classes.heading}><strong style= {{color : "#404952"}}>{props.name} ({props.bloodGroup})</strong></Typography>
+          <Typography className={props.classes.heading}><strong style= {{color : "#404952"}}>{props.name}</strong></Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
           <Typography align = "left" className = {props.classes.alignLeft}>
-            Gender : {props.gender}<br/> 
-            Age : {props.age}<br/>
             Phone : {props.phone} <br/>
             Area : {props.area}<br/>
             <Button 
@@ -40,7 +38,7 @@ const donor = (props) => {
               color="secondary"
               disabled = {props.disabled}
               onClick = {props.clicked}
-              className = "req-btn">Request Donation</Button>
+              className = "req-btn">Confirm Request</Button>
           </Typography>
         </ExpansionPanelDetails>
       </ExpansionPanel>

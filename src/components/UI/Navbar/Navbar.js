@@ -40,16 +40,12 @@ class Navbar extends React.Component {
   render() {
     const { classes } = this.props;
     const { value } = this.state;
-    let registerButtonValue = "Register as Donor";
-    if(this.props.isDonor)
-      registerButtonValue = "Update Profile"
-
     return (
       <div className={classes.root}>
         <AppBar position="static" className={classes.own}>
           <StyledTabs centered value={value} onChange={this.handleChange}>
           {this.props.isAuth ? <Tab label="Donors" onClick ={() => this.buttonClickedHandler("/donors")}/>  : null}
-          {this.props.isAuth ? <Tab label={registerButtonValue} onClick ={() => this.buttonClickedHandler("/registerDonor")}/> : null}
+          {this.props.isAuth ? <Tab label="Profile" onClick ={() => this.buttonClickedHandler("/registerDonor")}/> : null}
           {this.props.isAuth ? <Tab label="Logout" onClick ={this.logout} />: null}
           </StyledTabs>
         </AppBar>

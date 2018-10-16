@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import * as actions from '../../store/actions/index';
 import Card from '../../hoc/Card/Card';
+import Requests from '../../components/Requests/Requests';
 import './RegisterDonor.css';
 
 // Material UI Imports start
@@ -48,6 +49,7 @@ class RegisterDonor extends Component{
         bloodGroup : 'A+',
         name : '',
         gender : 'male',
+        requestedBy : null,
         available : true,
         loading : false,
         error : null
@@ -86,7 +88,8 @@ class RegisterDonor extends Component{
                         phone : snapshotObj.phone,
                         gender : snapshotObj.gender,
                         bloodGroup : snapshotObj.bloodGroup,
-                        available : snapshotObj.available
+                        available : snapshotObj.available,
+                        requestedBy : snapshotObj.requestedBy
                     })
                 })
         }
@@ -98,11 +101,15 @@ class RegisterDonor extends Component{
     switchAvailability = name => event => {
         this.setState({ [name]: event.target.checked });
       };
+
+    clickedHandler = (id) => {
+        console.log(id);
+    }
  
     handleSubmit = () => {
         this.setState({loading : true});
         const database = firebase.database();
-        const {name,age,area,bloodGroup,gender,phone,available} = this.state;
+        const {name,age,area,bloodGroup,gender,phone,available,requestedBy} = this.state;
         database.ref(`donors/${this.props.uid}`).set({
             name,
             age,
@@ -110,7 +117,8 @@ class RegisterDonor extends Component{
             bloodGroup,
             gender,
             phone,    
-            available
+            available,
+            requestedBy
         })
         .then(res => {
             this.setState({loading : false, error : null});
@@ -122,9 +130,21 @@ class RegisterDonor extends Component{
     }
     render(){
         return(
-            <div  className = "Main">
+            <div  className = "main">
             {this.state.loading ? <Spinner/> : 
+            <div className = "content-container">
+            <div className = "requests">
+                <Card>
+                    <h1 className = "h2 heading font-weight-bold">Donation Requests</h1>
+                    {(!this.props.isDonor || (this.props.isDonor && !this.state.requestedBy)) ?  
+                        <p>No Requests Found</p> : 
+                        <Requests requests  ={this.state.requestedBy} clicked = {this.clickedHandler}/>}                
+                </Card>
+            </div>            
+            <div className = "register-form">
+                <div className = "form-container">
             <Card>
+                <h1 className = "h2 heading font-weight-bold">Register as Donor</h1>
                 <p className = "Error">{this.state.error ? this.state.error  : null}</p>                
                 <ValidatorForm
                     ref="form"
@@ -210,7 +230,10 @@ class RegisterDonor extends Component{
                         color="secondary" 
                         type="submit">{this.props.isDonor ? "Update" : "Register"}</Button>
                 </ValidatorForm>
-            </Card>}
+            </Card>
+            </div>
+            </div>
+            </div>}
             </div>
         )
     }
