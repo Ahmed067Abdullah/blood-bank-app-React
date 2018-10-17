@@ -7,3 +7,4 @@ export const LOGOUT = 'LOGOUT';
 export const REGISTERED_DONOR = 'REGISTERED_DONOR';
 
 export const SET_DONORS = 'SET_DONORS';
+export const SET_REQUESTED_DONORS = 'SET_REQUESTED_DONORS';

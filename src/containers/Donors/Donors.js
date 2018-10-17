@@ -126,13 +126,15 @@ class Donors extends Component{
               area = {donor.area}
               bloodGroup = {donor.bloodGroup}
               gender = {donor.gender}
-              disabled = {!this.props.isDonor}
+              disabled = {!this.props.isDonor 
+                            || this.props.requestedDonors.find((requestedDonors) => requestedDonors.to === donor.id)
+                            || donor.id === this.props.uid}
               clicked = {() => this.clickedHandler(donor.id)}
               phone = {donor.phone}/>
           )
         })
       }
-      
+      console.log(this.props.requestedDonors)
       return(
         <div className = "main-container">
           <div className = "left">
@@ -176,7 +178,8 @@ const mapStateToProps = state => {
   return{
     donors : state.donors.donors,
     uid : state.auth.uid,
-    isDonor : state.auth.isDonor
+    isDonor : state.auth.isDonor,
+    requestedDonors : state.auth.requestedDonors
   }
 }
 

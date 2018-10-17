@@ -3,7 +3,8 @@ export {
     setSignup,
     login,
     logout,
-    registeredDonor
+    registeredDonor,
+    setRequests
 } from './auth';
 
 export {

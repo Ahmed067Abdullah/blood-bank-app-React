@@ -167,6 +167,10 @@ class Profile extends Component{
         let updatedObj = {};
         updatedObj[`requests/${reqId}/status`] = 1; 
         firebase.database().ref().update(updatedObj)
+
+        updatedObj = {};
+        updatedObj[`donors/${reqId}/donatedAt`] = new Date() .getTime();
+        firebase.database().ref().update(updatedObj)
     }
  
     canceledHandler = (id,reqId) => {
@@ -229,4 +233,5 @@ const mapDispatchToProps = dispatch => {
         onSetRegistered : () => dispatch(actions.registeredDonor())        
     }
 }
+
 export default connect(mapStateToProps,mapDispatchToProps)(Profile);

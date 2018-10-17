@@ -4,7 +4,8 @@ const initialState = {
     isAuth : false,
     isSignup : false,
     uid : '',
-    isDonor : false
+    isDonor : false,
+    requestedDonors : []
 }
 
 const reducer = (state = initialState, action) => {
@@ -38,7 +39,12 @@ const reducer = (state = initialState, action) => {
             return{
                 ...state,
                 isDonor : true
-            }            
+            }  
+        case actionTypes.SET_REQUESTED_DONORS:
+            return{
+                ...state,
+                requestedDonors : action.requestedDonors
+            }          
         default:
             return state;     
     }

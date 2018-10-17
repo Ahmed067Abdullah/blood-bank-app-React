@@ -1,4 +1,6 @@
 import * as actionTypes from './actionTypes';
+import * as firebase from 'firebase';
+
 
 export const setSignin = () => {
     return{
@@ -28,5 +30,30 @@ export const logout = () => {
 export const registeredDonor = () => {
     return{
         type : actionTypes.REGISTERED_DONOR
+    }
+}
+
+export const setRequestedDonors = (requestedDonors) => {
+    return{
+        type : actionTypes.SET_REQUESTED_DONORS,
+        requestedDonors
+    }
+}
+
+export const setRequests = (uid) => {
+    return dispatch => {
+        firebase.database()
+            .ref('/requests')
+            .orderByChild('from')
+            .equalTo(uid)
+            .on('value', snapshot => {
+                const retObj = snapshot.val();
+                let requestedDonors = [];
+                for(let key in retObj){
+                    requestedDonors.push({id : key, ...retObj[key]})
+                }
+                dispatch(setRequestedDonors(requestedDonors))            
+            })
+        console.log("asds")
     }
 }

@@ -80,8 +80,11 @@ class Auth extends Component{
                 firebase.database().ref(`donors/${uid}`).once('value')
                     .then(res => {
                         this.props.onLogin(uid);
-                        if(res.val())
+                        if(res.val()){
                             this.props.onSetRegistered();
+                            this.props.onSetRequestedDonors(uid);
+                        }
+
                         this.props.history.replace("/donors");
                     })
                     .catch(err => {
@@ -107,6 +110,7 @@ class Auth extends Component{
     }
 
     render(){
+        console.log(this.state.error)
         let authMessage = "Already Have an Account? ";
         let authLink = "Sign in";
         if(!this.props.isSignup){
@@ -118,7 +122,7 @@ class Auth extends Component{
             <p className="h1 heading font-weight-bold text-uppercase">Blood Bank</p>
             {!this.state.loading ?
                 <Card>
-                    <p className = "Error">{this.state.error ? this.state.error  : null}</p>
+                    {/* <p className = "Error">{this.state.error ? this.state.error  : null}</p> */}
                     <ValidatorForm
                         ref="form"
                         onSubmit={this.handleSubmit}
@@ -168,7 +172,8 @@ const mapDispatchToProps = dispatch => {
         onLogout : () => dispatch(actions.logout()),
         onSignin : () => dispatch(actions.setSignin()),
         onSignup : () => dispatch(actions.setSignup()),
-        onSetRegistered : () => dispatch(actions.registeredDonor())
+        onSetRegistered : () => dispatch(actions.registeredDonor()),
+        onSetRequestedDonors : (uid) => dispatch(actions.setRequests(uid))
     }
 }
 
