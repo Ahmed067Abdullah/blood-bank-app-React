@@ -103,16 +103,10 @@ class Donors extends Component{
   };
 
   clickedHandler = (id) => {
-
-    let requestedDonor = this.state.donors.find((donor) => {
-      return donor.id === id
-    });
-    if(!requestedDonor.requestedBy)
-      requestedDonor.requestedBy = [];
-    requestedDonor.requestedBy.push(this.props.uid);
-
-    firebase.database().ref(`donors/${id}/`).update({
-      requestedBy : requestedDonor.requestedBy
+    firebase.database().ref('/requests').push({
+      from : this.props.uid,
+      to : id,
+      status : '0'
     })
   }
 

@@ -1,6 +1,6 @@
 import React from 'react';
 
-// import './Donors.css';
+import Aux from '../../../hoc/Auxiliary/Auxiliary';
 
 // Material UI Imports start
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';
@@ -32,13 +32,25 @@ const donor = (props) => {
           <Typography align = "left" className = {props.classes.alignLeft}>
             Phone : {props.phone} <br/>
             Area : {props.area}<br/>
-            <Button 
-              type="submit" 
-              variant="contained" 
-              color="secondary"
-              disabled = {props.disabled}
-              onClick = {props.clicked}
-              className = "req-btn">Confirm Request</Button>
+
+            {props.showButtons ?
+              <Aux>
+                <Button 
+                  type="submit" 
+                  variant="contained" 
+                  color="secondary"
+                  disabled = {props.disabled}
+                  onClick = {props.confirmed}
+                  className = "req-btn">Confirm</Button>
+                <Button 
+                  type="submit" 
+                  variant="contained" 
+                  color="secondary"
+                  disabled = {props.disabled}
+                  onClick = {props.canceled}
+                  className = "req-btn">Cancel</Button>
+              </Aux> :
+            null}
           </Typography>
         </ExpansionPanelDetails>
       </ExpansionPanel>

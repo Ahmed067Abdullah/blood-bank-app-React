@@ -7,7 +7,7 @@ import Aux from '../../hoc/Auxiliary/Auxiliary';
 
 // Containers to be rendered using routing
 import Auth from '../../containers/Auth/Auth';
-import RegisterDonor from '../../containers/RegisterDonor/RegisterDonor';
+import Profile from '../../containers/Profile/Profile';
 import Donors from '../../containers/Donors/Donors';
 import Logout from '../../containers/Auth/Logout/Logout';
 
@@ -23,7 +23,7 @@ class Layout extends Component{
         if(this.props.isAuth){
             routes = (
             <Switch>
-                <Route path = "/registerDonor" component = {RegisterDonor}/>
+                <Route path = "/profile" component = {Profile}/>
                 <Route path = "/auth" component = {Auth}/>
                 <Route path = "/donors" component = {Donors}/>
                 <Route path = "/logout" component = {Logout}/>

@@ -1,40 +1,43 @@
-import React, {Component} from 'react';
+import React from 'react';
+
+import Card from '../../hoc/Card/Card';
 import Requester from './Requester/Requester';
-import * as firebase from 'firebase';
-
-class Requests extends Component{
-    
-    state = {
-        requesters : []
-    }
-
-    componentDidMount(){
-        const requests = this.props.requests;
-        let requesters = []
-        for(let i = 0 ; i < requests.length ; i++){
-            firebase.database().ref(`/donors/${requests[i]}`).on('value', snapshot => {
-                 requesters.push({id : requests[i], ...snapshot.val()});
-            })
-        }
-        this.setState({requesters})
-    }
-    
-    render(){
-        return(
+import './Requests.css';
+const requests = (props) =>{
+    return(
+        <Card>
             <div>
-            {this.state.requesters.map((request) => {
-                return (
-                    <Requester
-                        key = {request.id} 
-                        name = {request.name}
-                        area = {request.area}
-                        disabled = {false}
-                        clicked = {() => this.props.clicked(request.id)}
-                        phone = {request.phone} />)
-                })}
+                <h2 className = "h3 font-weight-bold req-heading">Requests</h2>
+                {props.requests && props.requests.length > 0 ? 
+                    props.requests.map((request) => {
+                        return (
+                            <Requester
+                                key = {request.id} 
+                                name = {request.name}
+                                area = {request.area}
+                                showButtons = {true}
+                                disabled = {false}
+                                confirmed = {() => props.confirmed(request.id,request.reqId)} 
+                                canceled = {() => props.canceled(request.id,request.reqId)}
+                                phone = {request.phone} />)
+                    }) : <p>No Requests Found</p>} 
             </div>
-        )
-    }
+
+            <div>
+                <h2 className = "h3 font-weight-bold req-heading">Confirmed Requests</h2>
+                {props.confirmedRequests && props.confirmedRequests.length > 0 ? 
+                    props.confirmedRequests.map((request) => {
+                        return (
+                            <Requester
+                                key = {request.id} 
+                                name = {request.name}
+                                area = {request.area}
+                                showButtons = {false}
+                                phone = {request.phone} />)
+                        }) : <p>You haven't confirmed any requests yet</p>}
+            </div>
+        </Card>
+    )
 }
 
-export default Requests;
+export default requests;
