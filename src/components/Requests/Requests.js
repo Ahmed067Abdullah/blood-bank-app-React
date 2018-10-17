@@ -16,7 +16,7 @@ const requests = (props) =>{
                                 name = {request.name}
                                 area = {request.area}
                                 showButtons = {true}
-                                disabled = {false}
+                                disabled = {!props.canDonate}
                                 confirmed = {() => props.confirmed(request.id,request.reqId)} 
                                 canceled = {() => props.canceled(request.id,request.reqId)}
                                 phone = {request.phone} />)

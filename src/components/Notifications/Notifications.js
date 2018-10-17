@@ -13,7 +13,7 @@ const requests = (props) =>{
                     return (
                         <Requester
                             key = {notification.id} 
-                            name = {notification.name}
+                            name = {notification.name + " has accepted your donation request"}
                             area = {notification.area}
                             phone = {notification.phone} />)
                 }) : <p>No Notifications Found</p>}

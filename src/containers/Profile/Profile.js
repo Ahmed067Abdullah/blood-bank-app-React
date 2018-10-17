@@ -7,6 +7,7 @@ import * as actions from '../../store/actions/index';
 import Requests from '../../components/Requests/Requests';
 import Notifications from '../../components/Notifications/Notifications';
 import RegisterDonor from '../../components/RegisterDonor/RegisterDonor'
+import Dialog from '../../components/UI/Dialog/Dialog';
 import './Profile.css';
 
 class Profile extends Component{
@@ -22,17 +23,21 @@ class Profile extends Component{
         error : null,
         requesters : [],
         confirmedRequests : [],
-        notifications : []
+        notifications : [],
+        canDonate : false,
+        donatedAt : '',
+        dialogOpen : false
     }
+
+    timeString = '';
 
     componentDidMount() {
         if(this.props.isDonor){
-            
+
             // Fetching donor data
             firebase.database()
                 .ref(`donors/${this.props.uid}`)
-                .once('value')
-                .then(snapshot =>{
+                .on('value', snapshot =>{
                     const snapshotObj = snapshot.val();
                     this.setState({
                         name : snapshotObj.name,
@@ -41,8 +46,13 @@ class Profile extends Component{
                         phone : snapshotObj.phone,
                         gender : snapshotObj.gender,
                         bloodGroup : snapshotObj.bloodGroup,
-                        available : snapshotObj.available
-                    })
+                        available : snapshotObj.available,
+                        donatedAt : snapshotObj.donatedAt
+                    });
+                    if(new Date(new Date().getTime() - snapshotObj.donatedAt).getMonth() >= 3 || !snapshotObj.donatedAt)
+                        this.setState({canDonate : true})
+                    else
+                        this.setState({canDonate : false})
                 })
             
             // fetching donation requests and pushing them in their respective type
@@ -135,12 +145,22 @@ class Profile extends Component{
     }
 
     switchAvailability = name => event => {
-        this.setState({ [name]: event.target.checked });
+        if(this.state.canDonate)
+            this.setState({ [name]: event.target.checked });
+        else{
+            let temp = new Date(this.state.donatedAt);
+            temp.setMonth(temp.getMonth() + 3);
+            temp = temp.toString();
+            temp = temp.slice(0,temp.length-34);
+            this.setState({dialogOpen : true})
+            this.timeString = "You can't donate till " + temp;
+        }
+
       };
 
     handleSubmit = () => {
         this.setState({loading : true});
-        const {name,age,area,bloodGroup,gender,phone,available} = this.state;
+        const {name,age,area,bloodGroup,gender,phone,available,donatedAt} = this.state;
         firebase.database()
             .ref(`donors/${this.props.uid}`)
             .set({
@@ -151,6 +171,7 @@ class Profile extends Component{
                 gender,
                 phone,    
                 available,
+                donatedAt
             })
         .then(res => {
             this.setState({loading : false, error : null});
@@ -165,11 +186,12 @@ class Profile extends Component{
     // Donation requests functions start
     confirmedHandler = (id,reqId) => {
         let updatedObj = {};
-        updatedObj[`requests/${reqId}/status`] = 1; 
+        updatedObj[`requests/${reqId}/status`] = "1"; 
         firebase.database().ref().update(updatedObj)
 
         updatedObj = {};
-        updatedObj[`donors/${reqId}/donatedAt`] = new Date() .getTime();
+        updatedObj[`donors/${this.props.uid}/donatedAt`] = new Date().getTime();
+        updatedObj[`donors/${this.props.uid}/available`] = false;
         firebase.database().ref().update(updatedObj)
     }
  
@@ -179,16 +201,22 @@ class Profile extends Component{
         firebase.database().ref().update(updatedObj)
     }
     // Donation requests functions end
+
+    handleClose = () => {
+        this.setState({dialogOpen : false})
+    }
     
     render(){
         return(
             <div  className = "main">
+                {this.state.dialogOpen ? <Dialog text = {this.timeString} handleClose = {this.handleClose} open = {this.state.dialogOpen}  /> : null}
                 {this.state.loading ? 
                     <Spinner/> : 
                     
                     <div className = "content-container">
                         <div className = "requests">
                             <Requests 
+                                canDonate = {this.state.canDonate}
                                 requests  ={this.state.requesters} 
                                 confirmedRequests = {this.state.confirmedRequests}
                                 confirmed = {this.confirmedHandler} 
