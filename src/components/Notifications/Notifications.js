@@ -15,7 +15,8 @@ const requests = (props) =>{
                             key = {notification.id} 
                             name = {notification.name + " has accepted your donation request"}
                             area = {notification.area}
-                            phone = {notification.phone} />)
+                            phone = {notification.phone}
+                            confirmedAt = {notification.donatedAt} />)
                 }) : <p>No Notifications Found</p>}
         </Card>
     )

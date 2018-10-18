@@ -2,7 +2,7 @@ import * as actionTypes from '../actions/actionTypes';
 
 const initialState = {
     isAuth : false,
-    isSignup : false,
+    isSignup : true,
     uid : '',
     isDonor : false,
     requestedDonors : []
@@ -30,7 +30,7 @@ const reducer = (state = initialState, action) => {
             return{
                 ...state,
                 isAuth : false,
-                isSignup : false,
+                isSignup : true,
                 uid : '',
                 isDonor : false,
                 requestedDonors : []

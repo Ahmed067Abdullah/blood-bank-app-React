@@ -24,7 +24,7 @@ class Profile extends Component{
         requesters : [],
         confirmedRequests : [],
         notifications : [],
-        canDonate : false,
+        canDonate : true,
         donatedAt : '',
         donatedTo : '',
         dialogOpen : false
@@ -54,13 +54,12 @@ class Profile extends Component{
                     const recoveryMonths = new Date(new Date().getTime() - snapshotObj.donatedAt).getMinutes()
                     if(recoveryMonths >= 2 || !snapshotObj.donatedAt){
                         this.setState({canDonate : true});
-                        if(recoveryMonths >= 2){
+                        if(recoveryMonths >= 2  && !this.state.canDonate){
                             let updatedObj = {};
                             updatedObj[`/requests/${snapshotObj.donatedTo}/status`] = "3";
                             firebase.database().ref().update(updatedObj);
                         }
                     }
-
                     else
                         this.setState({canDonate : false})
                 })
@@ -89,6 +88,7 @@ class Profile extends Component{
                             .on('value', ss => {
                                 let retVal = ss.val()
                                 requestersData.push({
+                                    donatedAt :  requests[i].donatedAt, 
                                     reqId : requests[i].id, 
                                     id :requests[i].from, 
                                     name : retVal.name, 
@@ -105,6 +105,7 @@ class Profile extends Component{
                             .on('value', ss => {
                                 let retVal = ss.val()
                                 confirmedRequestersData.push({
+                                    donatedAt :  confirmedRequests[i].donatedAt, 
                                     reqId : confirmedRequests[i].id, 
                                     id :confirmedRequests[i].from, 
                                     name : retVal.name, 
@@ -129,7 +130,7 @@ class Profile extends Component{
                         confirmedRequests.push({id :requester, ...retObj[requester]})
                 }
                 
-                // fetching donor details who have donated to you and pushing then in confirmedRequestersData                   
+                // fetching donor details who have donated to you and pushing them in confirmedRequestersData                   
                 let confirmedRequestersData = [];
                 for(let i = 0 ; i < confirmedRequests.length ; i++){
                     firebase.database()
@@ -138,6 +139,7 @@ class Profile extends Component{
                             let retVal = ss.val()
                             confirmedRequestersData.push({
                                 reqId : confirmedRequests[i].id, 
+                                donatedAt :  confirmedRequests[i].donatedAt, 
                                 id :confirmedRequests[i].to, 
                                 name : retVal.name, 
                                 phone : retVal.phone, 
@@ -171,8 +173,9 @@ class Profile extends Component{
                 let temp = new Date(this.state.donatedAt);
                 // for 3 months
                 // temp.setMonth(temp.getMonth() + 3);
-                //for 3 minutes
-                temp.setMinutes(temp.getMinutes() + 3);
+
+                //for 2 minutes
+                temp.setMinutes(temp.getMinutes() + 2);
                 temp = temp.toString();
                 temp = temp.slice(0,temp.length-34);
                 this.setState({dialogOpen : true})
@@ -242,10 +245,9 @@ class Profile extends Component{
                         handleClose = {this.handleClose} 
                         open = {this.state.dialogOpen}  /> 
                     : null}
-                {this.state.loading ? 
-                    <Spinner/> : 
-                    
-                    <div className = "content-container">
+                {this.state.loading 
+                    ? <Spinner/> 
+                    : <div className = "content-container">
                         <div className = "requests">
                             <Requests 
                                 canDonate = {this.state.canDonate}

@@ -20,12 +20,17 @@ const styles = theme => ({
     },
     alignLeft : {
         color : "#af111c"
+    },
+    main : {
+      backgroundColor: "#fceee3"
     }
   });
 
 const donor = (props) => {
+    let date = new Date(props.confirmedAt).toString();
+    date = date.slice(0, date.length - 34);
     return(
-        <ExpansionPanel>
+        <ExpansionPanel  className = {props.classes.main}>
         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
           <Typography className={props.classes.heading}><strong style= {{color : "#404952"}}>{props.name}</strong></Typography>
         </ExpansionPanelSummary>
@@ -33,7 +38,7 @@ const donor = (props) => {
           <Typography align = "left" className = {props.classes.alignLeft}>
             Phone : {props.phone} <br/>
             Area : {props.area}<br/>
-
+            {props.showButtons ? "Requested At" : "Confirmed At"} : {date}<br/>
             {props.showButtons ?
               <Aux>
                 <Button 
@@ -51,7 +56,8 @@ const donor = (props) => {
                   onClick = {props.canceled}
                   className = "req-btn">Cancel</Button>
               </Aux> :
-            null}
+              null
+            }
           </Typography>
         </ExpansionPanelDetails>
       </ExpansionPanel>

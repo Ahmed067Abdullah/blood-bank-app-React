@@ -110,7 +110,6 @@ class Auth extends Component{
     }
 
     render(){
-        console.log(this.state.error)
         let authMessage = "Already Have an Account? ";
         let authLink = "Sign in";
         if(!this.props.isSignup){

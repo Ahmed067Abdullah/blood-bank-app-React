@@ -17,6 +17,7 @@ const requests = (props) =>{
                                 area = {request.area}
                                 showButtons = {true}
                                 disabled = {!props.canDonate}
+                                confirmedAt = {request.donatedAt}
                                 confirmed = {() => props.confirmed(request.id,request.reqId)} 
                                 canceled = {() => props.canceled(request.id,request.reqId)}
                                 phone = {request.phone} />)
@@ -27,11 +28,13 @@ const requests = (props) =>{
                 <h2 className = "h3 font-weight-bold req-heading">Confirmed Requests</h2>
                 {props.confirmedRequests && props.confirmedRequests.length > 0 ? 
                     props.confirmedRequests.map((request) => {
+                        console.log(request.donatedAt)
                         return (
                             <Requester
                                 key = {request.id} 
                                 name = {request.name}
                                 area = {request.area}
+                                confirmedAt = {request.donatedAt}
                                 showButtons = {false}
                                 phone = {request.phone} />)
                         }) : <p>You haven't confirmed any requests yet</p>}

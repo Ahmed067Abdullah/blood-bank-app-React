@@ -106,7 +106,8 @@ class Donors extends Component{
     firebase.database().ref('/requests').push({
       from : this.props.uid,
       to : id,
-      status : "0"
+      status : "0",
+      donatedAt : new Date().getTime()
     })
   }
 
@@ -134,7 +135,6 @@ class Donors extends Component{
           )
         })
       }
-      console.log(this.props.requestedDonors)
       return(
         <div className = "main-container">
           <div className = "left">
