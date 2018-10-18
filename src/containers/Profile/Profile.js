@@ -26,6 +26,7 @@ class Profile extends Component{
         notifications : [],
         canDonate : false,
         donatedAt : '',
+        donatedTo : '',
         dialogOpen : false
     }
 
@@ -47,10 +48,19 @@ class Profile extends Component{
                         gender : snapshotObj.gender,
                         bloodGroup : snapshotObj.bloodGroup,
                         available : snapshotObj.available,
-                        donatedAt : snapshotObj.donatedAt
+                        donatedAt : snapshotObj.donatedAt,
+                        donatedTo : snapshotObj.donatedTo,
                     });
-                    if(new Date(new Date().getTime() - snapshotObj.donatedAt).getMonth() >= 3 || !snapshotObj.donatedAt)
-                        this.setState({canDonate : true})
+                    const recoveryMonths = new Date(new Date().getTime() - snapshotObj.donatedAt).getMinutes()
+                    if(recoveryMonths >= 2 || !snapshotObj.donatedAt){
+                        this.setState({canDonate : true});
+                        if(recoveryMonths >= 2){
+                            let updatedObj = {};
+                            updatedObj[`/requests/${snapshotObj.donatedTo}/status`] = "3";
+                            firebase.database().ref().update(updatedObj);
+                        }
+                    }
+
                     else
                         this.setState({canDonate : false})
                 })
@@ -65,9 +75,9 @@ class Profile extends Component{
                     let requests = [];
                     let confirmedRequests = [];
                     for(let requester in retObj){
-                        if(retObj[requester].status === '0' || retObj[requester].status === 0)
+                        if(retObj[requester].status === '0')
                             requests.push({id :requester, ...retObj[requester]})
-                        else if(retObj[requester].status === '1' || retObj[requester].status === 1)
+                        else if(retObj[requester].status === '1' || retObj[requester].status === '3')
                             confirmedRequests.push({id :requester, ...retObj[requester]})
                     }
 
@@ -115,7 +125,7 @@ class Profile extends Component{
 
                 let confirmedRequests = [];
                 for(let requester in retObj){
-                    if(retObj[requester].status === '1' || retObj[requester].status === 1)
+                    if(retObj[requester].status === '1' || retObj[requester].status === '3')
                         confirmedRequests.push({id :requester, ...retObj[requester]})
                 }
                 
@@ -145,22 +155,35 @@ class Profile extends Component{
     }
 
     switchAvailability = name => event => {
-        if(this.state.canDonate)
-            this.setState({ [name]: event.target.checked });
-        else{
-            let temp = new Date(this.state.donatedAt);
-            temp.setMonth(temp.getMonth() + 3);
-            temp = temp.toString();
-            temp = temp.slice(0,temp.length-34);
-            this.setState({dialogOpen : true})
-            this.timeString = "You can't donate till " + temp;
-        }
-
-      };
+        firebase.database()
+        .ref(`donors/${this.props.uid}/donatedAt`)
+        .once('value', snapshot =>{
+            const donatedAt = snapshot.val();
+            const recoveryMonths = new Date(new Date().getTime() - donatedAt).getMinutes()
+          
+            if(recoveryMonths >= 2){
+                this.setState({canDonate : true, [name]: event.target.checked });
+                let updatedObj = {};
+                updatedObj[`/requests/${this.state.donatedTo}/status`] = "3";
+                firebase.database().ref().update(updatedObj);
+            }
+            else{
+                let temp = new Date(this.state.donatedAt);
+                // for 3 months
+                // temp.setMonth(temp.getMonth() + 3);
+                //for 3 minutes
+                temp.setMinutes(temp.getMinutes() + 3);
+                temp = temp.toString();
+                temp = temp.slice(0,temp.length-34);
+                this.setState({dialogOpen : true})
+                this.timeString = "You can't donate till " + temp;
+            }
+        })
+      }
 
     handleSubmit = () => {
         this.setState({loading : true});
-        const {name,age,area,bloodGroup,gender,phone,available,donatedAt} = this.state;
+        const {name,age,area,bloodGroup,gender,phone,available,donatedAt,donatedTo} = this.state;
         firebase.database()
             .ref(`donors/${this.props.uid}`)
             .set({
@@ -171,7 +194,8 @@ class Profile extends Component{
                 gender,
                 phone,    
                 available,
-                donatedAt
+                donatedAt,
+                donatedTo
             })
         .then(res => {
             this.setState({loading : false, error : null});
@@ -185,19 +209,22 @@ class Profile extends Component{
 
     // Donation requests functions start
     confirmedHandler = (id,reqId) => {
+        const time = new Date().getTime();
         let updatedObj = {};
         updatedObj[`requests/${reqId}/status`] = "1"; 
+        updatedObj[`requests/${reqId}/donatedAt`] = time;
         firebase.database().ref().update(updatedObj)
 
         updatedObj = {};
-        updatedObj[`donors/${this.props.uid}/donatedAt`] = new Date().getTime();
+        updatedObj[`donors/${this.props.uid}/donatedAt`] = time;
         updatedObj[`donors/${this.props.uid}/available`] = false;
+        updatedObj[`donors/${this.props.uid}/donatedTo`] = reqId;
         firebase.database().ref().update(updatedObj)
     }
  
     canceledHandler = (id,reqId) => {
         let updatedObj = {};
-        updatedObj[`requests/${reqId}/status`] = 2; 
+        updatedObj[`requests/${reqId}/status`] = "2"; 
         firebase.database().ref().update(updatedObj)
     }
     // Donation requests functions end
@@ -209,7 +236,12 @@ class Profile extends Component{
     render(){
         return(
             <div  className = "main">
-                {this.state.dialogOpen ? <Dialog text = {this.timeString} handleClose = {this.handleClose} open = {this.state.dialogOpen}  /> : null}
+                {this.state.dialogOpen 
+                    ? <Dialog 
+                        text = {this.timeString} 
+                        handleClose = {this.handleClose} 
+                        open = {this.state.dialogOpen}  /> 
+                    : null}
                 {this.state.loading ? 
                     <Spinner/> : 
                     

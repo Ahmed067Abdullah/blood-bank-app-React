@@ -30,10 +30,10 @@ const reducer = (state = initialState, action) => {
             return{
                 ...state,
                 isAuth : false,
-                isSignup : true,
+                isSignup : false,
                 uid : '',
-                isDonor : false
-
+                isDonor : false,
+                requestedDonors : []
             }
         case actionTypes.REGISTERED_DONOR:
             return{

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Aux from '../../../hoc/Auxiliary/Auxiliary';
+import './Requester.css';
 
 // Material UI Imports start
 import ExpansionPanel from '@material-ui/core/ExpansionPanel';

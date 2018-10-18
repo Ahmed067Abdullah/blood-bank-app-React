@@ -122,7 +122,7 @@ class Auth extends Component{
             <p className="h1 heading font-weight-bold text-uppercase">Blood Bank</p>
             {!this.state.loading ?
                 <Card>
-                    {/* <p className = "Error">{this.state.error ? this.state.error  : null}</p> */}
+                    <p className = "Error">{this.state.error ? this.state.error  : null}</p>
                     <ValidatorForm
                         ref="form"
                         onSubmit={this.handleSubmit}

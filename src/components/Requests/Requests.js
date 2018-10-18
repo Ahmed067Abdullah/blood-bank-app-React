@@ -12,7 +12,7 @@ const requests = (props) =>{
                     props.requests.map((request) => {
                         return (
                             <Requester
-                                key = {request.id} 
+                                key = {request.reqId} 
                                 name = {request.name}
                                 area = {request.area}
                                 showButtons = {true}

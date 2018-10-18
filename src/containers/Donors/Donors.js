@@ -106,7 +106,7 @@ class Donors extends Component{
     firebase.database().ref('/requests').push({
       from : this.props.uid,
       to : id,
-      status : '0'
+      status : "0"
     })
   }
 
