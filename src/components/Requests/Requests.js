@@ -28,7 +28,6 @@ const requests = (props) =>{
                 <h2 className = "h3 font-weight-bold req-heading">Confirmed Requests</h2>
                 {props.confirmedRequests && props.confirmedRequests.length > 0 ? 
                     props.confirmedRequests.map((request) => {
-                        console.log(request.donatedAt)
                         return (
                             <Requester
                                 key = {request.id} 

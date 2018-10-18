@@ -50,12 +50,10 @@ export const setRequests = (uid) => {
                 const retObj = snapshot.val();
                 let requestedDonors = [];
                 for(let key in retObj){
-                    console.log(retObj[key].status)
                     if(retObj[key].status !== "2" && retObj[key].status !== "3")
                         requestedDonors.push({id : key, ...retObj[key]})
                 }
                 dispatch(setRequestedDonors(requestedDonors))            
             })
-        console.log("asds")
     }
 }
